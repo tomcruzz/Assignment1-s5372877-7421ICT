@@ -515,7 +515,7 @@ const TodoItem = ({ todo, onDelete, onToggleCompletion }) => {
       </TouchableOpacity>
       {showDescription && <Text style={styles.description}>{todo.description}</Text>}
       <TouchableOpacity onPress={onDelete}>
-        <Ionicons name="trash-bin" size={24} color="red" />
+        <Ionicons name="trash-outline" size={24} color="red" />
       </TouchableOpacity>
     </View>
   );
@@ -526,7 +526,9 @@ const AddTodoScreen = ({ navigation, route }) => {
   const [description, setDescription] = useState('');
 
   const handleSaveTodo = () => {
-    // Add validation logic here if needed
+    if (!title.trim() || !description.trim()) {
+      return; // Prevent adding empty todos
+    }
     const newTodo = {
       id: Date.now(),
       text: title,
