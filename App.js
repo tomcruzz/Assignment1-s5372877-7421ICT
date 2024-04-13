@@ -1,81 +1,5 @@
-// import React from 'react';
-// import { StyleSheet, Text, View, Button } from 'react-native';
-
-// export default function App() {
-//   const todos = [
-//     { id: 1, text: "Buy Milk", completed: false },
-//     { id: 2, text: "Buy Bread", completed: false },
-//     { id: 3, text: "Buy Eggs", completed: false }
-//   ];
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.title}>My Todo List</Text>
-
-//       <View style={styles.line}></View>
-
-//       <View style={styles.todoList}>
-//         {todos.map(todo => (
-//           <View key={todo.id} style={styles.todoItemContainer}>
-//             <Text style={styles.todoItemText}>{todo.text}</Text>
-//           </View>
-//         ))}
-//       </View>
-
-//       <View style={styles.line}></View>
-
-//       <Button
-//         title="Add New Todo"
-//         onPress={() => console.log("Add new todo button pressed")}
-//         style={styles.addButton}
-//       />
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     textAlign: 'center',
-//     justifyContent: 'center',
-//     paddingHorizontal: 20,
-//   },
-//   title: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     textAlign:'center',
-//     marginBottom: 20,
-//     marginTop: 30,
-//   },
-//   line: {
-//     width: '100%',
-//     height: 2,
-//     backgroundColor: 'black',
-//     marginBottom: 20,
-//   },
-//   todoList: {
-//     flex: 1,
-//     justifyContent: 'flex-start',
-//   },
-//   todoItemContainer: {
-//     backgroundColor: '#0d6efd',
-//     padding: 10,
-//     marginBottom: 10,
-//     borderRadius: 50,
-//   },
-//   todoItemText: {
-//     fontSize: 16,
-//     color: 'white',
-//   },
-//   addButton: {
-//     marginTop: 20,
-//   },
-// });
-
-
-import React from 'react';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, TextInput, FlatList, Alert, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -148,6 +72,7 @@ function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>My Todo List</Text>
+      <View style={styles.line}></View>
       <FlatList
         data={todos}
         keyExtractor={item => item.id.toString()}
@@ -160,11 +85,13 @@ function HomeScreen({ navigation }) {
         )}
       />
 
+<View style={styles.line}></View>
+
       <TouchableOpacity
         style={[styles.addButton, {backgroundColor:'#0080ff'}]}
         onPress={() => navigation.navigate('AddTodo', { addTodo })}
       >
-        <Ionicons name="add-circle-outline" size={40} color="white" />
+        <Ionicons name="add-circle-outline" size={40} color="white" style={{position:'relative', left:'150%'}} />
         <Text style={[styles.addButtonText, {color:'white'}]}>Add New Todo</Text>
       </TouchableOpacity>
     </View>
@@ -179,11 +106,13 @@ const TodoItem = ({ todo, onDelete, onToggleCompletion }) => {
       <TouchableOpacity onPress={onToggleCompletion}>
         <Ionicons name={todo.completed ? 'checkmark-circle' : 'ellipse-outline'} size={30} color={todo.completed ? 'green' : 'black'} />
       </TouchableOpacity>
-      <Text style={[styles.todoItemText, { textDecorationLine: todo.completed ? 'line-through' : 'none' }]}>{todo.text}</Text>
+      <View style={{ flex: 1 }}>
+        <Text style={[styles.todoItemText, { textDecorationLine: todo.completed ? 'line-through' : 'none' }]}>{todo.text}</Text>
+        {showDescription && <Text style={styles.description}>Description: {todo.description}</Text>}
+      </View>
       <TouchableOpacity onPress={() => setShowDescription(!showDescription)}>
         <Ionicons name={showDescription ? 'caret-up' : 'caret-down'} size={30} color="black" />
       </TouchableOpacity>
-      {showDescription && <Text style={styles.description}>{todo.description}</Text>}
       <TouchableOpacity onPress={onDelete}>
         <Ionicons name="trash-outline" size={24} color="red" />
       </TouchableOpacity>
@@ -197,7 +126,7 @@ const AddTodoScreen = ({ navigation, route }) => {
 
   const handleSaveTodo = () => {
     if (!title.trim() || !description.trim()) {
-      return; // Prevent adding empty todos
+      return;
     }
     const newTodo = {
       id: Date.now(),
@@ -211,11 +140,10 @@ const AddTodoScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add New Todo</Text>
+      <View style={styles.line}></View>
       <TextInput
         style={styles.input}
         placeholder="Title"
@@ -246,7 +174,7 @@ const AddTodoScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#e6e6e6',
     paddingHorizontal: 20,
     paddingTop: 30,
   },
@@ -259,11 +187,11 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 40,
   },
   addButtonText: {
     fontSize: 18,
-    marginLeft: 10,
+    marginLeft: 70,
     color: 'blue',
   },
   input: {
@@ -278,15 +206,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   button: {
+    flexDirection: 'row',
     backgroundColor: 'lightgray',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 5,
+    borderRadius: 10,
     width: '45%',
+    height: '20%',
     alignItems: 'center',
+    marginTop: 280,
   },
   buttonText: {
     fontSize: 16,
+    textAlign: 'center',
   },
   todoItemContainer: {
     flexDirection: 'row',
@@ -307,5 +239,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
     marginLeft: 5,
+    
+  },
+  line: {
+    width: '100%',
+    height: 2,
+    backgroundColor: 'black',
+    marginBottom: 20,
   },
 });
